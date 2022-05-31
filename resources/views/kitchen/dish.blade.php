@@ -5,9 +5,9 @@
     <!-- Content Header (Page header) -->
     <div class="content-header">
       <div class="container-fluid">
-        <div class="row mb-2">
+        <div class="row">
           <div class="col-sm-6">
-            <h1 class="m-0">Kitchen</h1>
+            <h1 class="m-0">Dishes</h1>
           </div><!-- /.col -->
         </div><!-- /.row -->
       </div><!-- /.container-fluid -->
@@ -21,26 +21,39 @@
                 <div class="col-lg-12">
                     <div class="card">
                         <div class="card-body">
+                        @if (session('message'))
+                          <div class="alert alert-success">
+                              {{ session('message') }}
+                          </div>
+                        @endif
+                        <a href="/dish/create" class="btn btn-success">Create</a>
                             <table id="dishes" class="table table-bordered table-striped">
                                 <thead>
                                     <tr>
-                                        <th>Rendering engine</th>
-                                        <th>Browser</th>
-                                        <th>Platform(s)</th>
-                                        <th>Engine version</th>
-                                        <th>CSS grade</th>
+                                      <th>Dish Name</th>
+                                      <th>Category Name</th>
+                                      <th>Created_At</th>
+                                      <th>Actions</th>                                      
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr>
-                                        <td>Trident</td>
-                                        <td>Internet
-                                        Explorer 4.0
-                                        </td>
-                                        <td>Win 95+</td>
-                                        <td> 4</td>
-                                        <td>X</td>
-                                    </tr>
+                                  @foreach($dishes as $dish)
+                                  <tr>
+                                    <td>{{$dish->name}}</td>                                        
+                                    <td>{{$dish->category->name}}</td>
+                                    <td>{{$dish->created_at}}</td>
+                                    <td>
+                                      <div class="form-row">
+                                        <a style="height: 38px; margin-right: 10px" href="/dish/{{$dish->id}}/edit" class="btn btn-warning">Edit</a>
+                                        <form action="/dish/{{$dish->id}}" method="POST">
+                                          @csrf 
+                                          @method('DELETE')
+                                          <button type="submit" class="btn btn-danger" onclick="return confirm('Are you sure you want to delete this item?');">Delete</button>
+                                        </form>
+                                      </div>
+                                    </td>                                       
+                                  </tr>
+                                  @endforeach
                                 </tbody>
                             </table>
                         </div>
@@ -53,12 +66,14 @@
 
 @endsection
 
+<script src="/plugins/jquery/jquery.min.js"></script>
 <script>
   $(function () {
     $('#dishes').DataTable({
       "paging": true,
+      "pageLength": 10,
       "lengthChange": false,
-      "searching": false,
+      "searching": true,
       "ordering": true,
       "info": true,
       "autoWidth": false,
